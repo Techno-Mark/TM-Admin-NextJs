@@ -9,6 +9,11 @@ const Navbar = () => {
   const router = useRouter();
   const [openLogoutNavbar, setOpenLogoutNavbar] = useState(false);
   const selectRefNavbar = useRef<HTMLDivElement>(null);
+  const [username, setUsername] = useState("");
+
+  useEffect(() => {
+    setUsername(localStorage.getItem("username") || "");
+  }, []);
 
   const handleLogout = () => {
     setOpenLogoutNavbar(false);
@@ -49,7 +54,7 @@ const Navbar = () => {
               className="cursor-pointer flex items-center justify-center gap-2"
             >
               <Avatar sx={{ width: 34, height: 34, fontSize: 14 }}></Avatar>
-              {localStorage.getItem("username")}
+              {username}
             </span>
             {openLogoutNavbar && (
               <div className="absolute top-[55px] rounded-md -right-2 w-50 h-12 px-5 flex items-center justify-center bg-pureWhite shadow-xl z-50">
