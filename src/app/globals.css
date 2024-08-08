@@ -1,3 +1,30 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* For Datepicker */
+.muiDatepickerCustomizer .MuiTextField-root {
+  width: 100%;
+}
+
+.muiDatepickerCustomizer label {
+  top: 8px;
+  left: -15px;
+}
+
+.muiDatepickerCustomizer .MuiIconButton-root {
+  margin-top: 20px;
+}
+
+.muiDatepickerCustomizer fieldset {
+  border: none;
+  border-radius: 0;
+  border-bottom: 1px solid #8a8a8a;
+}
+
+.muiDatepickerCustomizer input {
+  padding: 8px 0 6px;
+  margin-top: 15px;
+  font-size: 14px;
+  width: 100%;
+}

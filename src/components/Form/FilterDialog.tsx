@@ -6,13 +6,18 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import { Autocomplete, FormControl, Slide, TextField } from "@mui/material";
 import { TransitionProps } from "@mui/material/transitions";
+import dayjs from "dayjs";
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
 const initialFilter = {
   formType: null,
+  date: null,
 };
 
 interface FilterProps {
   formType: string | null;
+  date: string | null;
 }
 
 interface FilterModalProps {
@@ -52,6 +57,7 @@ const FilterDialog = ({
   currentFilterData,
 }: FilterModalProps) => {
   const [formType, setFormType] = useState<LabelValue | null>(null);
+  const [date, setDate] = useState<string | null>(null);
 
   const [anyFieldSelected, setAnyFieldSelected] = useState<boolean>(false);
   const [currSelectedFields, setCurrSelectedFileds] =
@@ -64,22 +70,24 @@ const FilterDialog = ({
 
   const handleResetAll = () => {
     setFormType(null);
+    setDate(null);
     setAnyFieldSelected(false);
     currentFilterData?.(initialFilter);
   };
 
   useEffect(() => {
-    const isAnyFieldSelected: boolean = formType !== null;
+    const isAnyFieldSelected: boolean = formType !== null || date !== null;
 
     setAnyFieldSelected(isAnyFieldSelected);
-  }, [formType]);
+  }, [formType, date]);
 
   useEffect(() => {
     const selectedFields = {
       formType: formType !== null ? formType.value : null,
+      date: date !== null ? dayjs(date).format("MM-DD-YYYY") : null,
     };
     setCurrSelectedFileds(selectedFields);
-  }, [formType]);
+  }, [formType, date]);
 
   return (
     <div>
@@ -124,6 +132,23 @@ const FilterDialog = ({
                   )}
                 />
               </FormControl>
+              <div
+                className={`inline-flex mt-[2.88px] mx-[6px] muiDatepickerCustomizer w-[300px] max-w-[300px]`}
+              >
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DatePicker
+                    label="Date of Creation"
+                    value={date === null ? null : dayjs(date)}
+                    onChange={(newDate: any) => setDate(newDate.$d)}
+                    maxDate={dayjs(Date.now())}
+                    slotProps={{
+                      textField: {
+                        readOnly: true,
+                      } as Record<string, any>,
+                    }}
+                  />
+                </LocalizationProvider>
+              </div>
             </div>
           </div>
         </DialogContent>

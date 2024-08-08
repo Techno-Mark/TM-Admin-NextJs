@@ -2,12 +2,16 @@ import { callAPI } from "@/utils/API/callAPI";
 import {
   generateCommonBodyRender,
   generateCustomColumn,
+  generateCustomHeaderName,
 } from "@/utils/CommonTableFunction";
 import React, { useEffect, useState } from "react";
 import Loader from "../common/Loader";
-import { TablePagination, ThemeProvider } from "@mui/material";
+import { TablePagination, ThemeProvider, Tooltip } from "@mui/material";
 import { getMuiTheme } from "@/utils/CommonStyle";
 import MUIDataTable from "mui-datatables";
+import { Delete } from "@mui/icons-material";
+import DeleteDialog from "../common/DeleteDialog";
+import { toast } from "react-toastify";
 
 const pageNo = 1;
 const pageSize = 10;
@@ -34,8 +38,8 @@ interface List {
   phone: number | string;
   organizationName: string;
   projectDescription: string | null;
+  date: string;
 }
-``;
 
 const FormDatatable = ({
   searchValue,
@@ -50,6 +54,8 @@ const FormDatatable = ({
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(pageSize);
   const [tableDataCount, setTableDataCount] = useState(0);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleteId, setDeleteId] = useState(0);
 
   useEffect(() => {
     setFilteredOject({
@@ -110,12 +116,12 @@ const FormDatatable = ({
   const columnConfig = [
     {
       name: "id",
-      label: "Form ID",
+      label: "ID",
       bodyRenderer: generateCommonBodyRender,
     },
     {
       name: "formType",
-      label: "Form Type",
+      label: "Type",
       bodyRenderer: generateCommonBodyRender,
     },
     {
@@ -143,11 +149,62 @@ const FormDatatable = ({
       label: "Project Description",
       bodyRenderer: generateCommonBodyRender,
     },
+    {
+      name: "date",
+      label: "Date of Creation",
+      bodyRenderer: generateCommonBodyRender,
+    },
+    {
+      name: "id",
+      label: "Action",
+      bodyRenderer: generateCommonBodyRender,
+    },
   ];
 
-  const formCols = columnConfig.map((col: any) =>
-    generateCustomColumn(col.name, col.label, col.bodyRenderer)
-  );
+  const generateConditionalColumn = (column: {
+    name: string;
+    label: string;
+    bodyRenderer: (arg0: any) => any;
+  }) => {
+    if (column.label === "Action") {
+      return {
+        name: "id",
+        options: {
+          filter: true,
+          sort: true,
+          customHeadLabelRender: () => generateCustomHeaderName("Action"),
+          customBodyRender: (value: number) => {
+            return (
+              <div
+                onClick={() => {
+                  setDeleteOpen(true);
+                  setDeleteId(value);
+                }}
+              >
+                <Tooltip title={"Delete"} placement="top" arrow>
+                  <Delete />
+                </Tooltip>
+              </div>
+            );
+          },
+        },
+      };
+    } else {
+      return generateCustomColumn(
+        column.name,
+        column.label,
+        column.bodyRenderer
+      );
+    }
+  };
+
+  const formCols = columnConfig.map((col: any) => {
+    return generateConditionalColumn(col);
+  });
+
+  // const formCols = columnConfig.map((col: any) =>
+  //   generateCustomColumn(col.name, col.label, col.bodyRenderer)
+  // );
 
   const handlePageChangeWithFilter = (
     newPage: number,
@@ -176,6 +233,33 @@ const FormDatatable = ({
       page: 1,
       limit: pageSize,
     }));
+  };
+
+  const closeDeleteModal = () => {
+    setDeleteOpen(false);
+  };
+
+  const deleteFilter = async () => {
+    const params = {
+      id: deleteId,
+    };
+    const url = `${process.env.baseURL}/form/delete`;
+    const successCallback = (
+      ResponseData: null,
+      error: boolean,
+      ResponseStatus: string
+    ) => {
+      if (ResponseStatus === "Success" && error === false) {
+        toast.success("Record has been deleted successfully.");
+        getFormList();
+        setDeleteOpen(false);
+      } else {
+        setDeleteOpen(false);
+        getFormList();
+        toast.success("Please try again later.");
+      }
+    };
+    callAPI(url, params, successCallback, "POST");
   };
 
   return (
@@ -242,6 +326,16 @@ const FormDatatable = ({
       ) : (
         <Loader />
       )}
+      <DeleteDialog
+        isOpen={deleteOpen}
+        onClose={closeDeleteModal}
+        onActionClick={() => {
+          deleteFilter();
+        }}
+        Title={"Delete Data"}
+        firstContent={"Are you sure you want to delete this record?"}
+        secondContent={""}
+      />
     </>
   );
 };
