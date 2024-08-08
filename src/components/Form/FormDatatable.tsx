@@ -249,7 +249,7 @@ const FormDatatable = ({
       error: boolean,
       ResponseStatus: string
     ) => {
-      if (ResponseStatus === "Success" && error === false) {
+      if (ResponseStatus === "success" && error === false) {
         toast.success("Record has been deleted successfully.");
         getFormList();
         setDeleteOpen(false);
