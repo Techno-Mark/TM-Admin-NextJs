@@ -3,6 +3,7 @@ import {
   generateCommonBodyRender,
   generateCustomColumn,
   generateCustomHeaderName,
+  generateFormBodyRender,
 } from "@/utils/CommonTableFunction";
 import React, { useEffect, useState } from "react";
 import Loader from "../common/Loader";
@@ -120,11 +121,6 @@ const FormDatatable = ({
       bodyRenderer: generateCommonBodyRender,
     },
     {
-      name: "formType",
-      label: "Type",
-      bodyRenderer: generateCommonBodyRender,
-    },
-    {
       name: "fullName",
       label: "Full Name",
       bodyRenderer: generateCommonBodyRender,
@@ -153,6 +149,11 @@ const FormDatatable = ({
       name: "date",
       label: "Date of Creation",
       bodyRenderer: generateCommonBodyRender,
+    },
+    {
+      name: "formType",
+      label: "Form with Description",
+      bodyRenderer: generateFormBodyRender,
     },
     {
       name: "id",

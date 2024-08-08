@@ -52,3 +52,18 @@ export const generateCommonBodyRender = (bodyValue: any) => {
     </div>
   );
 };
+
+export const generateFormBodyRender = (bodyValue: any) => {
+  return (
+    <div className="ml-2">
+      {!bodyValue ||
+      bodyValue === "0" ||
+      bodyValue === null ||
+      bodyValue === "null"
+        ? "-"
+        : bodyValue === "FormWithoutProjectDescription"
+        ? "No"
+        : "Yes"}
+    </div>
+  );
+};
